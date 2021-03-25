@@ -1,25 +1,24 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.svm import LinearSVC
+import numpy as np
+import pandas as pd
+import seaborn as sns
 from IPython.display import display
 from sklearn import metrics
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_selection import chi2
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import cross_val_score
-from sklearn.ensemble import RandomForestClassifier
-import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.svm import LinearSVC
 
 
 class MachineLearningService:
     def __init__(self):
         pass
-
 
     def build_model(self):
         df = pd.read_csv("models/data/data.csv")
@@ -32,10 +31,11 @@ class MachineLearningService:
         label_id_df = df[['label', 'label_id']].drop_duplicates().sort_values('label_id')
         label_to_id = dict(label_id_df.values)
         id_to_label = dict(label_id_df[['label_id', 'label']].values)
-        fig = plt.figure(figsize=(8,6))  # uncomment to see totals of each category
+        fig = plt.figure(figsize=(8, 6))  # uncomment to see totals of each category
         df.groupby('label').description.count().plot.bar(ylim=0)
         plt.show()
-        tfidf = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2', encoding='latin-1', ngram_range=(1, 2), stop_words='english')
+        tfidf = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2', encoding='latin-1', ngram_range=(1, 2),
+                                stop_words='english')
 
         features = tfidf.fit_transform(df.description).toarray()
         labels = df.label_id
@@ -60,7 +60,8 @@ class MachineLearningService:
             X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
 
             clf = MultinomialNB().fit(X_train_tfidf, y_train)
-            print(clf.predict(count_vect.transform(["Windows-based Trojan that was developed in the C programming language"])))
+            print(clf.predict(
+                count_vect.transform(["Windows-based Trojan that was developed in the C programming language"])))
 
             models = [
                 RandomForestClassifier(n_estimators=200, max_depth=3, random_state=0),
@@ -83,7 +84,7 @@ class MachineLearningService:
             plt.show()
             print(cv_df.groupby('model_name').accuracy.mean())
 
-        #LinearSVC is the most accurate model
+        # LinearSVC is the most accurate model
         model = LinearSVC()
 
         X_train, X_test, y_train, y_test, indices_train, indices_test = train_test_split(features, labels, df.index,

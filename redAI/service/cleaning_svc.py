@@ -1,11 +1,14 @@
-import string
 import json
+import string
+
 import pandas as pd
 import spacy
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
 from .data_svc import DataService
+
 
 class CleaningService:
 
@@ -15,7 +18,7 @@ class CleaningService:
     def split_into_words(self, text):
         tokens = word_tokenize(text)
         tokens = [w.lower() for w in tokens]
-        #remove punctuation
+        # remove punctuation
         table = str.maketrans('', '', string.punctuation)
         stripped = [w.translate(table) for w in tokens]
         # remove remaining tokens that are not alphabetic
@@ -50,8 +53,8 @@ class CleaningService:
             print(token.text)
 
     def bow_test(self):
-        #group = DataService.get_group_json(group_name="APT1")
-        #groups = DataService.get_groups_json()
+        # group = DataService.get_group_json(group_name="APT1")
+        # groups = DataService.get_groups_json()
         CountVec = CountVectorizer(ngram_range=(1, 1),  # to use bigrams ngram_range=(2,2)
                                    stop_words='english')
 

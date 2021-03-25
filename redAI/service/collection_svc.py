@@ -17,7 +17,7 @@ class CollectionService:
             "course_of_action": []
         }
 
-        #groups
+        # groups
         collected_groups = []
         for group in self.groups:
             group_dict = {"name": group.name, "description": ""}
@@ -100,7 +100,7 @@ class CollectionService:
                         elif t_description[0] == ' ':
                             t_description = t_description[1:]
                 tech_dict["description"] = t_description.replace('<code>', '').replace('</code>', '').replace(
-                                       '\n', '').encode('ascii', 'ignore').decode('ascii')
+                    '\n', '').encode('ascii', 'ignore').decode('ascii')
 
                 collected_techniques.append(tech_dict)  # only add if a description exists
         collection_dict["technique"] = collected_techniques
@@ -113,7 +113,8 @@ class CollectionService:
                 relationships_dict = {"name": self.attack.get(relationship.target_ref).name, "description": ""}
                 if 'description' in relationship:
                     r_description = relationship.description
-                    r_description = r_description.replace('<code>', '').replace('</code>', '').replace('"', "").replace(',', '').replace(
+                    r_description = r_description.replace('<code>', '').replace('</code>', '').replace('"', "").replace(
+                        ',', '').replace(
                         '\t', '').replace('  ', ' ').replace('\n', '').encode('ascii', 'ignore').decode('ascii')
                     find_pattern = re.compile('\[.*?\]\(.*?\)')  # get rid of att&ck reference (name)[link to site]
                     m = find_pattern.findall(r_description)
@@ -158,9 +159,9 @@ class CollectionService:
             collected_courses_of_action.append(course_dict)
         collection_dict["course_of_action"] = collected_courses_of_action
 
-        #write to csv
+        # write to csv
         with open("models/data/data.csv", "w+", encoding="utf-8") as file:
-            #writer = csv.writer(file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            # writer = csv.writer(file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
             fieldNames = ["name", "description", "label"]
             writer = csv.DictWriter(file, fieldnames=fieldNames)
             writer.writeheader()

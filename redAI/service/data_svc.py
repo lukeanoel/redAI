@@ -1,7 +1,8 @@
-import logging
 import json
-import re
+import logging
 import os
+import re
+
 import pandas as pd
 
 
@@ -40,9 +41,8 @@ class DataService:
                 continue
         return groups
 
-
     def get_group_json_pd(group_name):
-        group_data = pd.read_json('models/groups/'+group_name+'.json')
+        group_data = pd.read_json('models/groups/' + group_name + '.json')
         return group_data
 
     def reload_database(self, schema='conf/schema.sql'):
@@ -102,14 +102,17 @@ class DataService:
                     if item["relationship_type"] == 'uses':
                         if 'description' in item:
                             normalized_example = item['description'].replace('<code>', '').replace('</code>',
-                                       '').replace('\n', '').encode('ascii', 'ignore').decode('ascii')
+                                                                                                   '').replace('\n',
+                                                                                                               '').encode(
+                                'ascii', 'ignore').decode('ascii')
                             # Remove att&ck reference (name)[link to site]
                             normalized_example = re.sub('\[.*?\]\(.*?\)', '', normalized_example)
                             if item['target_ref'].startswith('attack-pattern'):
                                 if item['target_ref'] in loaded_items:
                                     loaded_items[item['target_ref']]['example_uses'].append(normalized_example)
                                 else:
-                                    logging.critical('[!] Found target_ref not in loaded data: {}'.format(item['target_ref']))
+                                    logging.critical(
+                                        '[!] Found target_ref not in loaded data: {}'.format(item['target_ref']))
         logging.debug("[#] {} Techniques found in input file".format(len(loaded_items)))
         # Deduplicate input data from existing items in the DB
         to_add = {x: y for x, y in loaded_items.items() if x not in cur_items}
@@ -121,9 +124,9 @@ class DataService:
                 [await self.dao.insert('true_positives', dict(uid=k, true_positive=defang_text(x))) for x in
                  v['example_uses']]
 
-
     async def last_technique_check(self, criteria):
-        await self.dao.delete('report_sentence_hits', dict(uid=criteria['sentence_id'], attack_uid=criteria['attack_uid']))
+        await self.dao.delete('report_sentence_hits',
+                              dict(uid=criteria['sentence_id'], attack_uid=criteria['attack_uid']))
         number_of_techniques = await self.dao.get('report_sentence_hits', dict(uid=criteria['sentence_id']))
         if len(number_of_techniques) == 0:
             await self.dao.update('report_sentences', 'uid', criteria['sentence_id'], dict(found_status='false'))
@@ -148,14 +151,14 @@ class DataService:
     async def get_confirmed_techniques(self, report_id):
         # The SQL select join query to retrieve the confirmed techniques for the report from the database
         select_join_query = (
-            f"SELECT report_sentences.uid, report_sentence_hits.attack_uid, report_sentence_hits.report_uid, report_sentence_hits.attack_tid, true_positives.true_positive " 
-            f"FROM ((report_sentences INNER JOIN report_sentence_hits ON report_sentences.uid = report_sentence_hits.uid) " 
-            f"INNER JOIN true_positives ON report_sentence_hits.uid = true_positives.sentence_id AND report_sentence_hits.attack_uid = true_positives.uid) " 
+            f"SELECT report_sentences.uid, report_sentence_hits.attack_uid, report_sentence_hits.report_uid, report_sentence_hits.attack_tid, true_positives.true_positive "
+            f"FROM ((report_sentences INNER JOIN report_sentence_hits ON report_sentences.uid = report_sentence_hits.uid) "
+            f"INNER JOIN true_positives ON report_sentence_hits.uid = true_positives.sentence_id AND report_sentence_hits.attack_uid = true_positives.uid) "
             f"WHERE report_sentence_hits.report_uid = {report_id} "
             f"UNION "
-            f"SELECT report_sentences.uid, report_sentence_hits.attack_uid, report_sentence_hits.report_uid, report_sentence_hits.attack_tid, false_negatives.false_negative " 
-            f"FROM ((report_sentences INNER JOIN report_sentence_hits ON report_sentences.uid = report_sentence_hits.uid) " 
-            f"INNER JOIN false_negatives ON report_sentence_hits.uid = false_negatives.sentence_id AND report_sentence_hits.attack_uid = false_negatives.uid) " 
+            f"SELECT report_sentences.uid, report_sentence_hits.attack_uid, report_sentence_hits.report_uid, report_sentence_hits.attack_tid, false_negatives.false_negative "
+            f"FROM ((report_sentences INNER JOIN report_sentence_hits ON report_sentences.uid = report_sentence_hits.uid) "
+            f"INNER JOIN false_negatives ON report_sentence_hits.uid = false_negatives.sentence_id AND report_sentence_hits.attack_uid = false_negatives.uid) "
             f"WHERE report_sentence_hits.report_uid = {report_id}")
         # Run the SQL select join query
         hits = await self.dao.raw_select(select_join_query)

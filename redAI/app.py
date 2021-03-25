@@ -1,13 +1,15 @@
 #!/usr/bin/env python
-import os
 import logging
-from redAI.database.attack_interface import Attack
+import os
+
 from stix2 import MemoryStore
-from service.data_svc import DataService
-from service.collection_svc import CollectionService
-from service.cleaning_svc import CleaningService
-from service.ml_svc import MachineLearningService
+
 from database.dao import Dao
+from redAI.database.attack_interface import Attack
+from service.cleaning_svc import CleaningService
+from service.collection_svc import CollectionService
+from service.data_svc import DataService
+from service.ml_svc import MachineLearningService
 
 
 def main():

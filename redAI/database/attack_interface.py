@@ -1,5 +1,6 @@
 from itertools import chain
-from stix2 import Filter, MemoryStore
+
+from stix2 import Filter
 from stix2.utils import get_type_from_id
 
 
@@ -66,11 +67,11 @@ class Attack:
 
         # remove revoked and deprecated objects from output
         # targets = list(
-            # filter(
-               # lambda x: x.get("x_mitre_deprecated", False) is False and x.get("revoked", False) is False,
-               # stix_objects
-            #)
-        #)
+        # filter(
+        # lambda x: x.get("x_mitre_deprecated", False) is False and x.get("revoked", False) is False,
+        # stix_objects
+        # )
+        # )
 
         # build lookup of stixID to stix object
         id_to_target = {}
